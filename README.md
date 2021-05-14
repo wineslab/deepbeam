@@ -21,10 +21,10 @@ The data is organized as follows.
 Each HDF5 file contains I/Q samples corresponding to 3 (parameter `num_gains` in the scripts) receiver gain values (40 dB, 50 dB, 60 dB) to represent three different received SNR values (i.e., in a range between -15 dB and 20 dB) and 24 TX beams or 12 TX beams. 
 
 The files are organized using HDF5 datasets. Each file contains four datasets
-- "iq" contains the I/Q samples (one column for the I samples, the other for the Q samples)
-- "tx_beam" contains a label with the transmit beam used for the corresponding I/Q sample (i.e., entry N in the tx_beam dataset corresponds to entry N in the iq dataset)
-- "rx_beam" contains a label with the receive beam used for the corresponding I/Q sample (i.e., entry N in the rx_beam dataset corresponds to entry N in the iq dataset)
-- "gain" contains a label with the receiver gain value for the corresponding I/Q sample (i.e., entry N in the gain dataset corresponds to entry N in the iq dataset)
+- `iq` contains the I/Q samples (one column for the in-phase (I) samples, the other for the quadrature (Q) samples)
+- `tx_beam` contains a label with the transmit beam used for the corresponding I/Q sample (i.e., entry N in the tx_beam dataset corresponds to entry N in the iq dataset)
+- `rx_beam` contains a label with the receive beam used for the corresponding I/Q sample (i.e., entry N in the rx_beam dataset corresponds to entry N in the iq dataset)
+- `gain` contains a label with the receiver gain value for the corresponding I/Q sample (i.e., entry N in the gain dataset corresponds to entry N in the iq dataset)
 
 The total number of entries in each dataset depends on whether 24 or 12 TX beams are used (parameter `num_beams` in the scripts).  For each `(gain, tx_beam)` pair, we collected 10000 frames (parameter `num_frames_for_gain_tx_beam_pair` in the scripts). Each frame contains 15 blocks (parameter `num_blocks_per_frame` in the scripts). Each frame contains 2048 I/Q samples (parameter `num_samples_per_block` in the scripts). Therefore, the total number of entries is `num_gains * num_beams * num_frames_for_gain_tx_beam_pair * num_blocks_per_frame * num_samples_per_block`.
 
@@ -80,10 +80,10 @@ For the obstacle configuration, we provide the 24 and 12 TX beams data sets with
 A single HDF5 file is available for the Pi-Radio TXB data set. It contains I/Q samples corresponding to31 (parameter `num_gains` in the scripts) transmitter gain values and 5 TX beams (parameter `num_beams` in the scripts). 
 
 The files are organized using HDF5 datasets. Each file contains four datasets
-- "iq" contains the I/Q samples (one column for the I samples, the other for the Q samples)
-- "tx_beam" contains a label with the transmit beam used for the corresponding I/Q sample (i.e., entry N in the tx_beam dataset corresponds to entry N in the iq dataset)
-- "rx_beam" contains a label with the receive beam used for the corresponding I/Q sample (i.e., entry N in the rx_beam dataset corresponds to entry N in the iq dataset)
-- "gain" contains a label with the receiver gain value for the corresponding I/Q sample (i.e., entry N in the gain dataset corresponds to entry N in the iq dataset)
+- `iq` contains the I/Q samples (one column for the in-phase (I) samples, the other for the quadrature (Q) samples)
+- `tx_beam` contains a label with the transmit beam used for the corresponding I/Q sample (i.e., entry N in the tx_beam dataset corresponds to entry N in the iq dataset)
+- `rx_beam` contains a label with the receive beam used for the corresponding I/Q sample (i.e., entry N in the rx_beam dataset corresponds to entry N in the iq dataset)
+- `gain` contains a label with the receiver gain value for the corresponding I/Q sample (i.e., entry N in the gain dataset corresponds to entry N in the iq dataset)
 
 For each `(gain, tx_beam)` pair, we collected 10000 frames (parameter `num_frames_for_gain_tx_beam_pair` in the scripts). Each frame contains 5 blocks (parameter `num_blocks_per_frame` in the scripts). Each frame contains 2048 I/Q samples (parameter `num_samples_per_block` in the scripts). Therefore, the total number of entries is `num_gains * num_beams * num_frames_for_gain_tx_beam_pair * num_blocks_per_frame * num_samples_per_block`.
 
@@ -104,11 +104,11 @@ The Pi-Radio-based dataset is in the file `mrf-basic-config-5-beams.h5` for the 
 Each HDF5 file contains I/Q samples corresponding to 3 (parameter `num_gains` in the scripts) receiver gain values (40 dB, 50 dB, 60 dB) to represent three different received SNR values (i.e., in a range between -15 dB and 20 dB), 3 TX beams for the 24 TX beams codebook, and 3 AoA values (-45, 0, 45) (parameter `num_angles` in the scripts). 
 
 The files are organized using HDF5 datasets. Each file contains four datasets
-- "iq" contains the I/Q samples (one column for the I samples, the other for the Q samples)
-- "tx_beam" contains a label with the transmit beam used for the corresponding I/Q sample (i.e., entry N in the tx_beam dataset corresponds to entry N in the iq dataset)
-- "rx_beam" contains a label with the receive beam used for the corresponding I/Q sample (i.e., entry N in the rx_beam dataset corresponds to entry N in the iq dataset)
-- "gain" contains a label with the receiver gain value for the corresponding I/Q sample (i.e., entry N in the gain dataset corresponds to entry N in the iq dataset)
-- "angle" contains a label with the receiver angle value for the corresponding I/Q sample (i.e., entry N in the angle dataset corresponds to entry N in the iq dataset)
+- `iq` contains the I/Q samples (one column for the in-phase (I) samples, the other for the quadrature (Q) samples)
+- `tx_beam` contains a label with the transmit beam used for the corresponding I/Q sample (i.e., entry N in the tx_beam dataset corresponds to entry N in the iq dataset)
+- `rx_beam` contains a label with the receive beam used for the corresponding I/Q sample (i.e., entry N in the rx_beam dataset corresponds to entry N in the iq dataset)
+- `gain` contains a label with the receiver gain value for the corresponding I/Q sample (i.e., entry N in the gain dataset corresponds to entry N in the iq dataset)
+- `angle` contains a label with the receiver angle value for the corresponding I/Q sample (i.e., entry N in the angle dataset corresponds to entry N in the iq dataset)
 
 In this case, `num_beams` is 3. For each `(gain, tx_beam, angle)` tuple, we collected 10000 frames (parameter `num_frames_for_gain_tx_beam_pair` in the scripts). Each frame contains 15 blocks (parameter `num_blocks_per_frame` in the scripts). Each frame contains 2048 I/Q samples (parameter `num_samples_per_block` in the scripts). Therefore, the total number of entries is `num_gains * num_beams * num_angles * num_frames_for_gain_tx_beam_pair * num_blocks_per_frame * num_samples_per_block`.
 
