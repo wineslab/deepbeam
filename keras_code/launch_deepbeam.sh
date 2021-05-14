@@ -63,7 +63,7 @@ patience=100
 # This is where you can store pkl files with the models
 root=./
 # This is the path to the HDF5 file
-data_path=./
+data_path=./filename.h5
 
 save_path=$root
 save_path+="DeepBeam_cl_$num_of_conv_layers"

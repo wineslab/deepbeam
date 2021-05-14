@@ -3,12 +3,12 @@ import math
 import keras
 import random
 
-from DataGeneratorSidelobes_w_num_tx_beams import DataGeneratorSidelobes
+from DataGeneratorAoa_w_num_tx_beams import DataGeneratorAoa
 from keras.utils.io_utils import HDF5Matrix
 
 
 
-class DataGeneratorSidelobesCross(keras.utils.Sequence):
+class DataGeneratorAoaCross(keras.utils.Sequence):
     'Generates data for cross training and testing in Keras.'
 
     def __init__(
@@ -51,7 +51,7 @@ class DataGeneratorSidelobesCross(keras.utils.Sequence):
             this_dg_indexes = [self.indexes[x] for x in sorted(indexes_list[start_idx:end_idx])]
             # print(this_dg_indexes)
             self.child_dg.append(
-                DataGeneratorSidelobes(
+                DataGeneratorAoa(
                     this_dg_indexes,
                     self.batch_size,
                     data_path[i],

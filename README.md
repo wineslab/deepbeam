@@ -12,7 +12,7 @@ Please reference the paper if you use the code or data from the dataset: [bibtex
 
 The DeepBeam dataset can be found [at this link](TODO).
 
-It contains 19 HDF5 files that represent a data collection campaign run on the NI mmWave Transceiver System with four SiBeam 60 GHz radio heads and on two Pi-Radio digital 60 GHz radios. The data collection campaign is described in [Section 4 of the DeepBeam paper](https://arxiv.org/pdf/2012.14350.pdf).
+It contains 19 HDF5 files that represent a data collection campaign run on the NI mmWave Transceiver System with four SiBeam 60 GHz radio heads and on two [Pi-Radio](https://www.pi-rad.io) digital 60 GHz radios. The data collection campaign is described in [Section 4 of the DeepBeam paper](https://arxiv.org/pdf/2012.14350.pdf).
 
 The data is organized as follows.
 
@@ -151,9 +151,36 @@ For the obstacle configuration, we provide the AoA data sets with one configurat
 
 # Requirements
 
-TODO add requirements.txt
+See the [requirements.txt](requirements.txt) file.
 
 # Source code structure
 
-The 
+The source code can be found in the [keras_code](keras_code) folder. We provide bash and Python scripts to run training and testing, as well as auxiliary Python code with [DataGenerators](https://stanford.edu/~shervine/blog/keras-how-to-generate-data-on-the-fly) to automate the parsing of the data.
+
+### TXB Classification Training and Testing
+
+- Training for the TXB classification involves the `launch_deepbeam.sh` bash script, which sets the relevant variables and calls `DeepBeam.py`. This Python script accepts as input a number of parameters (documented in the `DeepBeam.py` file), runs training over a specific HDF5 file, and saves the model. It is possible to specify the input dataset (which will be parsed by the `DataGenerator.py`) and the folder to store the model parameters. Please refer to `launch_deepbeam.sh` and `DeepBeam.py` for a complete list of parameters.
+
+- Testing is performed by calling `launch_deepbeam_testing.sh`. It is possible to specify the input dataset (which will be parsed by the `DataGenerator.py`) and the folder to store the output accuracy. Please refer to `launch_deepbeam_testing.sh` and `DeepBeamTesting.py` for a complete list of parameters.
+
+### AoA Classification Training and Testing
+
+- Training for the AoA classification involves the `launch_deepbeam_aoa.sh` bash script, which sets the relevant variables and calls `DeepBeamAoa.py`. This Python script accepts as input a number of parameters (documented in the `DeepBeamAoa.py` file), runs training over a specific HDF5 file, and saves the model. It is possible to specify the input dataset (which will be parsed by the `DataGeneratorAoa.py`) and the folder to store the model parameters. Please refer to `launch_deepbeam_aoa.sh` and `DeepBeamAoa.py` for a complete list of parameters.
+
+- Testing is performed by calling `launch_deepbeam_testing.sh`. It is possible to specify the input dataset (which will be parsed by the `DataGeneratorAoa.py`) and the folder to store the output accuracy. Please refer to `launch_deepbeam_aoa_testing.sh` and `DeepBeamTesting.py` for a complete list of parameters.
+
+### Mixed TXB/AoA Training and Testing
+
+For training and testing over a combination of multiple HDF5 files, we rely on `DataGeneratorCross.py` as DataGenerator. It combines multiple generators to extract data consistently from different HDF5 files.
+
+- Training for the TXB classification involves the `launch_deepbeam_mixed.sh` bash script, which sets the relevant variables and calls `DeepBeamMixed.py`. This Python script accepts as input a number of parameters (documented in the `DeepBeamMixed.py` file), runs training over multiple HDF5 file, and saves the model. It is possible to specify the input datasets (which will be parsed by the `DataGeneratorCross.py`) and the folder to store the model parameters. Please refer to `launch_deepbeam_mixed.sh` and `DeepBeamMixed.py` for a complete list of parameters.
+
+- Testing is performed by calling `launch_deepbeam_mixed_testing.sh`. It is possible to specify multiple input datasets (which will be parsed by the `DataGeneratorCross.py`) and the folder to store the output accuracy. Please refer to `launch_deepbeam_mixed_testing.sh` and `DeepBeamMixedTesting.py` for a complete list of parameters.
+
+
+### Other files
+
+The `DataGeneratorTesting.py` (or similar) can be used to test the `DataGenerator` classes. `PlotConfusionMatrix.py` plots the confusion matrix. `Utils.py` contains functions to create models. `launch_filters.sh` and `DeepBeamGetFilters.py` extract the filter values from a specific model.
+
+
 

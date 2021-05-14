@@ -1,21 +1,37 @@
 #!/bin/bash
+
+# Customize this for your CUDA install
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-9.0/lib64/
 
-id_gpu=2
+# The GPU id depends on the number of GPUs in your system 
+id_gpu=0
 test_only=0
 
-# Dataset parameters
+# Dataset parameters - please refer to the README.md file for a detailed explanation
 
-num_blocks_per_frame=15
+
+# Number of frames collected for each (gain, beam, angle) pair
 num_frames_for_gain_tx_beam_pair=10000
+
+# Number of blocks collected for each frame
+num_blocks_per_frame=15
+
+# Number of samples for each block
 num_samples_per_block=2048
+
+# Number of gain values
 num_gains=3
+
+# Number of beams in the dataset
 num_beams=3
+
+# Number of angles collected
 num_angles=3
+
+# Select one among low, mid, high, all to filter by SNR (gain) values
 snr="all"
 
 # Training parameters
-
 epochs=10
 batch_size=100
 train_perc=0.60
@@ -25,7 +41,6 @@ save_best_only=1
 stop_param="acc"
 
 # Model parameters
-
 how_many_blocks_per_frame=1
 kernel_size=7
 num_of_kernels=64
@@ -35,8 +50,11 @@ size_of_dense_layers=128
 is_1d=0
 patience=100
 
-root=/home/frestuc/projects/beam_results/saved_models/obstacle/aoa/
-data_path=/media/michele/obstacle-rx-12-aoa-tx-tm-0-rx-tm-1.h5
+# DeepBeam network
+# This is where you can store pkl files with the models
+root=./
+# This is the path to the HDF5 file
+data_path=./filename.h5
 
 save_path=$root
 save_path+="DeepBeam_cl_$num_of_conv_layers"
@@ -50,7 +68,7 @@ save_path+="_srn_$snr"
 save_path+="_ne_$epochs"
 save_path+="_bs_$batch_size"
 
-python2 ./DeepBeamSideLobe.py \
+python2 ./DeepBeamAoa.py \
     --data_path $data_path \
     --batch_size $batch_size \
     --train_cnn \

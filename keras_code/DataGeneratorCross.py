@@ -7,7 +7,6 @@ from DataGenerator import DataGenerator
 from keras.utils.io_utils import HDF5Matrix
 
 
-
 class DataGeneratorCross(keras.utils.Sequence):
     'Generates data for cross training and testing in Keras.'
 
@@ -15,7 +14,8 @@ class DataGeneratorCross(keras.utils.Sequence):
         self,
         indexes,
         batch_size,
-        data_path,  # data_path can be a list or tuple, and indexes must be divisible by len(data_path)
+        # data_path can be a list or tuple, and indexes must be divisible by len(data_path)
+        data_path,
         num_tx_beams,
         num_blocks_per_frame,
         num_samples_per_block,
@@ -51,7 +51,8 @@ class DataGeneratorCross(keras.utils.Sequence):
             # this_dg_indexes = self.indexes[
             #     sorted(indexes_list[start_idx:end_idx])
             # ]
-            this_dg_indexes = [self.indexes[x] for x in sorted(indexes_list[start_idx:end_idx])]
+            this_dg_indexes = [self.indexes[x]
+                               for x in sorted(indexes_list[start_idx:end_idx])]
             # print(this_dg_indexes)
             self.child_dg.append(
                 DataGenerator(
@@ -66,7 +67,6 @@ class DataGeneratorCross(keras.utils.Sequence):
                     self.is_2d
                 )
             )
-
 
     def __len__(self):
         'Denotes the number of batches per epoch.'

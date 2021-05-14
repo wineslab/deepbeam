@@ -1,42 +1,42 @@
 #!/bin/bash
+
+# Customize this for your CUDA install
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-9.0/lib64/
 
-id_gpu=2
+# The GPU id depends on the number of GPUs in your system 
+id_gpu=0
 test_only=0
 
-# Dataset parameters
+# Dataset parameters - please refer to the README.md file for a detailed explanation
 
-num_blocks_per_frame=15
+# Number of frames collected for each (gain, beam) pair
 num_frames_for_gain_tx_beam_pair=10000
+
+# Number of blocks collected for each frame
+num_blocks_per_frame=15
+
+# Number of blocks actually used for training and testing
+# Needs to be less than or equal the num_blocks_per_frame
+how_many_blocks_per_frame=1
+
+# Number of samples for each block
 num_samples_per_block=2048
+
+# Number of gain values
 num_gains=3
+
+# Number of beams in the dataset
 num_beams=3
+
+# TODO
 is_2d_beam=0
 is_2d_model=1
+
+# Select one among low, mid, high, all to filter by SNR (gain) values
 snr="all"
 
-# diagonal-rx-12-2d-codebook-tx-tm-0-rx-tm-1.h5
-# diagonal-rx-12-2d-codebook-tx-tm-0-rx-tm-1-v2.h5
-# diagonal-rx-12-aoa-tx-tm-0-rx-tm-1.h5
-# diagonal-rx-12-tx-tm-0-rx-tm-1.h5
-# obstacle-rx-12-2d-codebook-tx-tm-0-rx-tm-1.h5
-# obstacle-rx-12-aoa-tx-tm-0-rx-tm-1.h5
-# obstacle-rx-12-tx-tm-0-rx-tm-1.h5
-# rx-12-2d-codebook-tx-jj-0-rx-tm-1.h5
-# rx-12-2d-codebook-tx-jj-1-rx-tm-1.h5
-# rx-12-2d-codebook-tx-tm-1-rx-tm-0.h5
-# rx-12-2d-codebook-tx-tm-0-rx-tm-1.h5
-# rx-12-aoa-tx-tm-0-rx-jj-0.h5
-# rx-12-aoa-tx-tm-0-rx-jj-1.h5
-# rx-12-aoa-tx-tm-0-rx-tm-1.h5
-# rx-12-aoa-tx-tm-1-rx-tm-0.h5
-# rx-12-tx-jj-0-rx-tm-1.h5
-# rx-12-tx-jj-1-rx-tm-1.h5
-# rx-12-tx-tm-0-rx-tm-1.h5
-# rx-12-tx-tm-1-rx-tm-0.h5
 
 # Training parameters
-
 epochs=10
 batch_size=100
 train_perc=0.60
@@ -45,9 +45,7 @@ test_perc=0.40
 save_best_only=1
 stop_param="acc"
 
-# Model parameters
-
-how_many_blocks_per_frame=1
+# Model parameters (Fig. 4 of the DeepBeam paper https://arxiv.org/pdf/2012.14350.pdf)
 kernel_size=7
 num_of_kernels=64
 num_of_conv_layers=7
@@ -55,13 +53,14 @@ num_of_dense_layers=2
 size_of_dense_layers=128
 patience=100
 
-root=/home/frestuc/projects/beam_results/saved_models/aoa/mixed/jj_0_jj_1_tm_0_tm_1/
-
-d1=/media/michele/rx-12-aoa-tx-tm-0-rx-jj-0.h5
-d2=/media/michele/rx-12-aoa-tx-tm-0-rx-jj-1.h5
-d3=/media/michele/rx-12-aoa-tx-tm-0-rx-tm-1.h5
-d4=/media/michele/rx-12-aoa-tx-tm-1-rx-tm-0.h5
-
+# DeepBeam network
+# This is where you can store pkl files with the models
+root=./
+# These are the paths to the HDF5 files
+d1=/filename1.h5
+d2=/filename2.h5
+d3=/filename3.h5
+d4=/filename4.h5
 
 save_path=$root
 save_path+="DeepBeam_cl_$num_of_conv_layers"
@@ -76,7 +75,7 @@ save_path+="_2dmodel_$is_2d_model"
 save_path+="_ne_$epochs"
 save_path+="_bs_$batch_size"
 
-python2 ./DeepBeamSidelobeMixed.py \
+python2 ./DeepBeamMixed.py \
     --batch_size $batch_size \
     --train_cnn \
     --test_only $test_only \
@@ -103,5 +102,3 @@ python2 ./DeepBeamSidelobeMixed.py \
     --is_2d_model $is_2d_model \
     --patience $patience \
 	--save_path $save_path
-
-# 720000 / 32 = 22500 batches

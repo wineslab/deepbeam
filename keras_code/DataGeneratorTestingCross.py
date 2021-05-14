@@ -14,9 +14,9 @@ def main():
         num_frames_for_gain_tx_beam_pair * len(tx_beams) * len(gains)
     )
     batch_size = 32
-    data_path_1 = '/media/michele/rx-12-tx-jj-0-rx-tm-1.h5'
-    data_path_2 = '/media/michele/rx-12-tx-jj-1-rx-tm-1.h5'
-    data_path_3 = '/media/michele/rx-12-tx-tm-0-rx-tm-1.h5'
+    data_path_1 = 'f1.h5'
+    data_path_2 = 'f2.h5'
+    data_path_3 = 'f3.h5'
     num_blocks_per_frame = 15
     how_many_blocks_per_frame = 15
     num_samples_per_block = 2048

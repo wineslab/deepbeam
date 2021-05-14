@@ -4,7 +4,7 @@ import keras
 from keras.utils.io_utils import HDF5Matrix
 
 
-class DataGeneratorSidelobes(keras.utils.Sequence):
+class DataGeneratorAoa(keras.utils.Sequence):
     'Generates data for Keras.'
 
     def __init__(

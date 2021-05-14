@@ -3,7 +3,7 @@ from keras.callbacks import ModelCheckpoint
 
 
 class CustomModelCheckpoint(ModelCheckpoint):
-    def __init__(self, filepath,  **kwargs):
+    def __init__(self, filepath, **kwargs):
         """
         Additional keyword args are passed to ModelCheckpoint;
         see those docs for information on what args are accepted.
@@ -51,12 +51,12 @@ class CustomModelCheckpoint(ModelCheckpoint):
                                   (epoch + 1, self.monitor, self.best))
             else:
                 if self.verbose > 0:
-                    print('\nEpoch %05d: saving model to %s' % (epoch + 1, filepath))
+                    print('\nEpoch %05d: saving model to %s' %
+                          (epoch + 1, filepath))
                 if self.save_weights_only:
                     self.model.save_weights(filepath, overwrite=True)
                 else:
                     self.model.save(filepath, overwrite=True)
-
 
     def on_epoch_end(self, epoch, logs=None):
         self.__super_epoch_end(epoch, logs)

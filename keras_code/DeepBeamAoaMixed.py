@@ -9,7 +9,7 @@ import os
 
 from argparse import Namespace
 from CustomModelCheckpoint import CustomModelCheckpoint
-from DataGeneratorSidelobes import DataGeneratorSidelobes
+from DataGeneratorAoaCross import DataGeneratorCross
 from keras import backend as K
 from keras.callbacks import EarlyStopping
 from keras.layers import Input, Dense, Flatten, Reshape, Lambda
@@ -27,7 +27,7 @@ from tqdm import tqdm
 from Utils import *
 from sklearn.metrics import confusion_matrix
 
-class DeepBeamSideLobe(object):
+class DeepBeamAoaMixed(object):
 
     def __init__(self):
         '''Initialize class variables.'''
@@ -102,13 +102,13 @@ class DeepBeamSideLobe(object):
         self.load_data()
         self.test()
 
-
     def load_data(self):
         '''Load data from path into framework.'''
         if not os.path.exists(self.args.save_path + '/indexes_DeepBeam.pkl'):
             print('--------- Creating indexes and saving them in indexes.pkl -----------')
             indexes = np.arange(
-                self.num_frames_for_gain_tx_beam_pair * self.num_beams * self.num_gains * self.num_angles
+                self.num_frames_for_gain_tx_beam_pair *
+                self.num_beams * self.num_gains * self.num_angles
             )
 
             train_idxs, valid_idxs, test_idxs = [], [], []
@@ -128,68 +128,76 @@ class DeepBeamSideLobe(object):
                 for beam in range(self.num_beams):
                     for angle in range(self.num_angles):
                         start_idx =\
-                            gain  * self.num_beams * self.num_angles * self.num_frames_for_gain_tx_beam_pair +\
-                            beam  * self.num_angles * self.num_frames_for_gain_tx_beam_pair +\
+                            gain * self.num_beams * self.num_angles * self.num_frames_for_gain_tx_beam_pair +\
+                            beam * self.num_angles * self.num_frames_for_gain_tx_beam_pair +\
                             angle * self.num_frames_for_gain_tx_beam_pair
                         train_idxs.extend(
-                            indexes[start_idx: start_idx+num_train]
+                            indexes[start_idx: start_idx + num_train]
                         )
                         valid_idxs.extend(
-                            indexes[start_idx+num_train: start_idx+num_val]
+                            indexes[start_idx + num_train: start_idx + num_val]
                         )
                         test_idxs.extend(
-                            indexes[start_idx+num_val: start_idx+self.num_frames_for_gain_tx_beam_pair]
+                            indexes[start_idx + num_val: start_idx +
+                                    self.num_frames_for_gain_tx_beam_pair]
                         )
 
             self.train_indexes_BL = train_idxs
             self.valid_indexes_BL = valid_idxs
-            self.test_indexes     = test_idxs
+            self.test_indexes = test_idxs
 
             # Saving the objects:
-            with open(self.args.save_path + '/indexes_DeepBeam.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
+            # Python 3: open(..., 'wb')
+            with open(self.args.save_path + '/indexes_DeepBeam.pkl', 'wb') as f:
                 pkl.dump([self.train_indexes_BL,
                           self.valid_indexes_BL,
                           self.test_indexes], f)
         else:
-            with open(self.args.save_path + "/indexes_DeepBeam.pkl", 'rb') as f:  # Python 3: open(..., 'rb') note that indexes
+            # Python 3: open(..., 'rb') note that indexes
+            with open(self.args.save_path + "/indexes_DeepBeam.pkl", 'rb') as f:
                 data_loaded = pkl.load(f)
             self.train_indexes_BL = data_loaded[0]
             self.valid_indexes_BL = data_loaded[1]
-            self.test_indexes     = data_loaded[2]
+            self.test_indexes = data_loaded[2]
 
         print('--------- Indexes check ----------')
-        print("Lenght of training: {} validation: {} testing: {}".format(len(self.train_indexes_BL), len(self.valid_indexes_BL), len(self.test_indexes)))
-        print(len(self.train_indexes_BL) + len(self.valid_indexes_BL) + len(self.test_indexes))
+        print("Lenght of training: {} validation: {} testing: {}".format(
+            len(self.train_indexes_BL), len(self.valid_indexes_BL), len(self.test_indexes)))
+        print(len(self.train_indexes_BL) +
+              len(self.valid_indexes_BL) + len(self.test_indexes))
 
         print('********************* Generating data for Baseline *********************')
-        self.train_generator_BL = DataGeneratorSidelobes(
-                                             indexes=self.train_indexes_BL,
-                                             batch_size=self.args.batch_size,
-                                             data_path=self.args.data_path,
-                                             num_blocks_per_frame=self.num_blocks_per_frame,
-                                             num_samples_per_block=self.num_samples_per_block,
-                                             how_many_blocks_per_frame=self.how_many_blocks_per_frame,
-                                             shuffle=False,
-                                             is_2d=self.is_2d)
-
-        self.valid_generator_BL = DataGeneratorSidelobes(indexes=self.valid_indexes_BL,
-                                             batch_size=self.args.batch_size,
-                                             data_path=self.args.data_path,
-                                             num_blocks_per_frame=self.num_blocks_per_frame,
-                                             num_samples_per_block=self.num_samples_per_block,
-                                             how_many_blocks_per_frame=self.how_many_blocks_per_frame,
-                                             shuffle=False,
-                                             is_2d=self.is_2d)
+        self.train_generator_BL = DataGeneratorCross(
+            indexes=self.train_indexes_BL,
+            batch_size=self.args.batch_size,
+            data_path=self.args.datasets,
+            num_tx_beams=self.args.num_beams,
+            num_blocks_per_frame=self.num_blocks_per_frame,
+            num_samples_per_block=self.num_samples_per_block,
+            how_many_blocks_per_frame=self.how_many_blocks_per_frame,
+            shuffle=False,
+            is_2d=self.is_2d)
+        self.valid_generator_BL = DataGeneratorCross(
+            indexes=self.valid_indexes_BL,
+            batch_size=self.args.batch_size,
+            data_path=self.args.datasets,
+            num_tx_beams=self.args.num_beams,
+            num_blocks_per_frame=self.num_blocks_per_frame,
+            num_samples_per_block=self.num_samples_per_block,
+            how_many_blocks_per_frame=self.how_many_blocks_per_frame,
+            shuffle=False,
+            is_2d=self.is_2d)
 
         print('*********************  Generating testing data *********************')
-        self.test_generator = DataGeneratorSidelobes(indexes=self.test_indexes,
-                                            batch_size=self.args.batch_size,
-                                            data_path=self.args.data_path,
-                                            num_blocks_per_frame=self.num_blocks_per_frame,
-                                            num_samples_per_block=self.num_samples_per_block,
-                                            how_many_blocks_per_frame=self.how_many_blocks_per_frame,
-                                            is_2d = self.is_2d)
-
+        self.test_generator = DataGeneratorCross(
+            indexes=self.test_indexes,
+            batch_size=self.args.batch_size,
+            data_path=self.args.datasets,
+            num_tx_beams=self.args.num_beams,
+            num_blocks_per_frame=self.num_blocks_per_frame,
+            num_samples_per_block=self.num_samples_per_block,
+            how_many_blocks_per_frame=self.how_many_blocks_per_frame,
+            is_2d=self.is_2d)
 
     def train(self):
         '''Train model through Keras framework.'''
@@ -199,26 +207,27 @@ class DeepBeamSideLobe(object):
                            optimizer=optimizer,
                            metrics=['accuracy'])
 
-
         ''' Set up callbacks '''
 
         call_backs = []
         checkpoint = CustomModelCheckpoint(
-                os.path.join(self.args.save_path, self.args.bl_model_name),
-                monitor=self.args.stop_param, verbose=1, save_best_only=self.save_best_only)
+            os.path.join(self.args.save_path, self.args.bl_model_name),
+            monitor=self.args.stop_param, verbose=1, save_best_only=self.save_best_only)
         call_backs.append(checkpoint)
         earlystop_callback = EarlyStopping(
-                    monitor=self.args.stop_param, min_delta=0, patience=self.args.patience,
-                    verbose=1, mode='auto')
+            monitor=self.args.stop_param, min_delta=0, patience=self.args.patience,
+            verbose=1, mode='auto')
         call_backs.append(earlystop_callback)
-        csv_logger = CSVLogger(self.args.save_path + "/train_history_log.csv", append=True)
+        csv_logger = CSVLogger(self.args.save_path +
+                               "/train_history_log.csv", append=True)
         call_backs.append(csv_logger)
 
         start_time = time.time()
         self.model.fit_generator(generator=self.train_generator_BL,
-                                 steps_per_epoch = self.args.max_steps if self.args.max_steps>0 else None,
+                                 steps_per_epoch=self.args.max_steps if self.args.max_steps > 0 else None,
                                  epochs=self.args.epochs,
-                                 validation_steps=len(self.valid_generator_BL)//self.args.batch_size,
+                                 validation_steps=len(
+                                     self.valid_generator_BL) // self.args.batch_size,
                                  validation_data=self.valid_generator_BL,
                                  shuffle=True,
                                  callbacks=call_backs,
@@ -229,39 +238,18 @@ class DeepBeamSideLobe(object):
         self.best_model_path = checkpoint.best_path
 
     def test(self):
-        #self.model.load_weights('/home/bruno/deepsig3/weights.hdf5')
-
         optimizer = Adam(lr=0.0001)
         self.model.compile(loss='categorical_crossentropy',
                            optimizer=optimizer,
                            metrics=['accuracy'])
         score = self.model.evaluate_generator(self.test_generator, verbose=1,
-                                              use_multiprocessing = False)
+                                              use_multiprocessing=False)
 
         print('********************* Testing score ******************')
         print(score)
         f = open(self.args.save_path + "/accuracy.txt", "w")
         f.write(str(score))
         f.close()
-
-
-
-    # def test(self):
-    #     #self.model.load_weights('/home/bruno/deepsig3/weights.hdf5')
-    #
-    #     optimizer = Adam(lr=0.0001)
-    #     self.model.compile(loss='categorical_crossentropy',
-    #                        optimizer=optimizer,
-    #                        metrics=['accuracy'])
-    #     score = self.model.evaluate_generator(self.test_generator, verbose=1,
-    #                                           use_multiprocessing = False)
-    #
-    #     print('********************* Testing score ******************')
-    #     print(score)
-    #     f = open(self.args.save_path + "/accuracy.txt", "w")
-    #     f.write(str(score))
-    #     f.close()
-
 
     def save_to_json(self):
         self.model.summary()
@@ -281,11 +269,10 @@ class DeepBeamSideLobe(object):
         self.model.load_weights(self.args.save_path + "/DeepBeam_model.hdf5")
         print("Loaded model from disk")
 
-
     def parse_arguments(self):
         '''Parse input user arguments.'''
 
-        parser = argparse.ArgumentParser(description = 'Train and Validation pipeline',
+        parser = argparse.ArgumentParser(description='Train and Validation pipeline',
                                          formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
         parser.add_argument('--max_steps', type=int, default=0,
@@ -294,8 +281,8 @@ class DeepBeamSideLobe(object):
         parser.add_argument('--id_gpu', type=str, default=2,
                             help='GPU to use.')
 
-        parser.add_argument('--is_1d', type=int, default=0, help='Build 1d model.')
-
+        parser.add_argument('--is_1d', type=int, default=0,
+                            help='Build 1d model.')
 
         parser.add_argument('--bl_model_name', type=str, default='DeepBeam_model.hdf5',
                             help='Name of baseline model.')
@@ -336,6 +323,9 @@ class DeepBeamSideLobe(object):
         parser.add_argument('--num_frames_for_gain_tx_beam_pair', type=int, default=10000,
                             help='How many frames we collected for each beam/gain pair.')
 
+        parser.add_argument('--is_2d_model', type=int, default=0,
+                            help='Train a 1D model.')
+
         parser.add_argument('--num_gains', type=int, default=3,
                             help='Number of different gains.')
 
@@ -363,11 +353,14 @@ class DeepBeamSideLobe(object):
         parser.add_argument('--test_perc', type=float, default=0.25,
                             help='Number of different gains.')
 
-        parser.add_argument('--save_path', type=str, default='./home/salvo/deepsig_res',
+        parser.add_argument('--datasets',
+                            nargs='+', type=str, help='List of datasets')
+
+        parser.add_argument('--save_path', type=str, default='./',
                             help='Path to save weights, model architecture, and logs.')
 
         parser.add_argument('--data_path', type=str,
-                            default='/mnt/nas/bruno/deepsig/2018.01/GOLD_XYZ_OSC.0001_1024.hdf5',
+                            default='./',
                             help='Path to data.')
 
         parser.add_argument('--patience', type=int, default=3,
@@ -383,4 +376,4 @@ class DeepBeamSideLobe(object):
 
 
 if __name__ == '__main__':
-    DeepBeamSideLobe()
+    DeepBeamAoaMixed()

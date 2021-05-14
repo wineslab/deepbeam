@@ -48,38 +48,6 @@ class DeepBeamGetFilters(object):
         model = self.model
         model.summary()
 
-        # kernels_dict = collections.defaultdict(list)
-        # dims = model.layers[layer_num].get_weights()[0].shape[2]
-        #
-        # for dim in range(dims):
-        #     kernels = conv2_get_kernels(model, dim, layer_num)
-        #     for idx, kernel_dim in enumerate(kernels):
-        #         kernels_dict[idx] += kernel_dim.tolist(),
-
-
-        # new_x, new_y, idx = [], [], 0
-        # for b in range(self.num_of_batches):
-        #     X, y = self.test_generator.__getitem__(b)
-        #     for i, v in enumerate(y):
-        #         cl = np.argmax(v)
-        #         if (cl == 1 or cl == 12):
-        #             new_x += X[i],
-        #             new_y += cl,
-        #             idx += 1
-        #
-        # new_x, new_y = np.array(new_x), np.array(new_y)
-        # a = {'X': new_x, 'y': new_y}
-        #
-        # pkl.dump(a, open("/home/frestuc/projects/beam_learning_mmwave/classes_1_12.pkl", "wb"))
-
-        # print("Loading...")
-        # dict = pkl.load(open("/home/frestuc/projects/beam_learning_mmwave/classes_1_12.pkl", "rb"))
-        # print("Loaded")
-
-        # X, y = dict['X'], dict['y']
-        #
-        # print(X.shape, y.shape)
-
         conv_0 = Model(inputs=model.input,
                        outputs=model.layers[1].output)
 
@@ -200,7 +168,7 @@ class DeepBeamGetFilters(object):
                             help='Number of blocks per frame I take.')
 
         parser.add_argument('--data_path', type=str,
-                            default='/mnt/nas/bruno/deepsig/2018.01/GOLD_XYZ_OSC.0001_1024.hdf5',
+                            default='./',
                             help='Path to data.')
 
         parser.add_argument('--batch_size', type=int, default=32,

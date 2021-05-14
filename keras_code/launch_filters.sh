@@ -1,8 +1,13 @@
 #!/bin/bash
 
-root=/home/frestuc/projects/beam_learning_mmwave/results/saved_models/swapped/
+# path
+root=./
+
+# model folder
 model=DeepBeam_cl_7_nk_64_ks_7_dl_2_sd_128_bf_5_srn_all_swap_1_ne_20_bs_100
-data_path=/media/michele/rx-12-swapped-antennas.h5 #/media/michele/rx-12.h5
+
+# HDF5 path
+data_path=/filename.h5
 
 layer_num=1
 id_gpu=0

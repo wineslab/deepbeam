@@ -19,17 +19,22 @@ def build_model_1d(
     print('*************** Building Baseline Model ***************')
     inputs = Input(shape=(num_samples_per_block, 2), name='Input')
 
-    x = Conv1D(num_of_kernels, kernel_size=kernel_size, padding='same', name='Conv_0')(inputs)
-    x = MaxPooling1D(pool_size=2, data_format='channels_last', name='MaxPool_0')(x)
+    x = Conv1D(num_of_kernels, kernel_size=kernel_size,
+               padding='same', name='Conv_0')(inputs)
+    x = MaxPooling1D(pool_size=2, data_format='channels_last',
+                     name='MaxPool_0')(x)
 
     for i in range(1, num_of_conv_layers):
-        x = Conv1D(num_of_kernels, kernel_size=kernel_size, padding='same', name='Conv_'+str(i))(x)
-        x = MaxPooling1D(pool_size=2, data_format='channels_last', name='MaxPool'+str(i))(x)
+        x = Conv1D(num_of_kernels, kernel_size=kernel_size,
+                   padding='same', name='Conv_' + str(i))(x)
+        x = MaxPooling1D(pool_size=2, data_format='channels_last',
+                         name='MaxPool' + str(i))(x)
 
     x = Flatten(name='Flatten')(x)
 
     for i in range(num_of_dense_layers):
-        x = Dense(size_of_dense_layers, activation='linear', name='Dense_'+str(i))(x)
+        x = Dense(size_of_dense_layers, activation='linear',
+                  name='Dense_' + str(i))(x)
 
     x = Dense(num_beams, activation='softmax', name='Softmax')(x)
 
@@ -48,25 +53,29 @@ def build_model(
 ):
     '''Build model architecture.'''
     print('*************** Building Baseline Model ***************')
-    inputs = Input(shape=(how_many_blocks_per_frame, num_samples_per_block, 2), name='Input')
+    inputs = Input(shape=(how_many_blocks_per_frame,
+                          num_samples_per_block, 2), name='Input')
 
-    x = Conv2D(num_of_kernels, kernel_size=(1, kernel_size), padding='same', name='Conv_0')(inputs)
-    x = MaxPooling2D(pool_size=(1, 2), data_format='channels_last', name='MaxPool_0')(x)
+    x = Conv2D(num_of_kernels, kernel_size=(1, kernel_size),
+               padding='same', name='Conv_0')(inputs)
+    x = MaxPooling2D(pool_size=(
+        1, 2), data_format='channels_last', name='MaxPool_0')(x)
 
     for i in range(1, num_of_conv_layers):
-        x = Conv2D(num_of_kernels, kernel_size=(1, kernel_size), padding='same', name='Conv_'+str(i))(x)
-        x = MaxPooling2D(pool_size=(1, 2), data_format='channels_last', name='MaxPool'+str(i))(x)
-
+        x = Conv2D(num_of_kernels, kernel_size=(1, kernel_size),
+                   padding='same', name='Conv_' + str(i))(x)
+        x = MaxPooling2D(pool_size=(
+            1, 2), data_format='channels_last', name='MaxPool' + str(i))(x)
 
     x = Flatten(name='Flatten')(x)
 
     for i in range(num_of_dense_layers):
-        x = Dense(size_of_dense_layers, activation='linear', name='Dense_'+str(i))(x)
+        x = Dense(size_of_dense_layers, activation='linear',
+                  name='Dense_' + str(i))(x)
 
     x = Dense(num_beams, activation='softmax', name='Softmax')(x)
 
     return Model(inputs=inputs, outputs=x)
-
 
 
 def plot_confusion_matrix(cm,
@@ -114,8 +123,8 @@ def plot_confusion_matrix(cm,
 
 
 def confusion_matrix_to_formatted_output(cm,
-                          save_path,
-                          normalize=True):
+                                         save_path,
+                                         normalize=True):
     """
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
@@ -128,7 +137,8 @@ def confusion_matrix_to_formatted_output(cm,
 
     with open(save_path, "w") as file:
         file.write("\\begin{tikzpicture}\n")
-        file.write("\\begin{axis}[enlargelimits=false,colorbar,colormap/Purples]\n")
+        file.write(
+            "\\begin{axis}[enlargelimits=false,colorbar,colormap/Purples]\n")
         file.write("\\addplot [matrix plot,point meta=explicit]\n")
         file.write(" coordinates {\n")
 

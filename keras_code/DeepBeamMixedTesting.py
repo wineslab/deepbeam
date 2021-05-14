@@ -1,19 +1,19 @@
 import argparse
-import h5py
-import json
-import keras
-from keras.models import load_model
+# import h5py
+# import json
+# import keras
+# from keras.models import load_model
 import numpy as np
 import pickle as pkl
-import time
+# import time
 import os
 
-from keras.models import Model
+# from keras.models import Model
 from keras.optimizers import Adam
 
-from keras.utils.io_utils import HDF5Matrix
+# from keras.utils.io_utils import HDF5Matrix
 from DataGeneratorCross import DataGeneratorCross
-from DataGeneratorSidelobesCross import DataGeneratorSidelobesCross
+from DataGeneratorAoaCross import DataGeneratorAoaCross
 from sklearn.metrics import confusion_matrix
 from keras.models import model_from_json
 
@@ -27,8 +27,6 @@ class DeepBeamTestingMixed(object):
         os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
         # os.environ["CUDA_VISIBLE_DEVICES"] = str(self.args.id_gpu)
 
-
-        # To Do: this is to load the FIR model correctly, might not be useful for other applications, need to un-hardcode this and let users pass it as a parameter
         self.is_2d = self.args.is_2d
         self.num_classes = self.args.num_classes
 
@@ -46,8 +44,6 @@ class DeepBeamTestingMixed(object):
         self.model.load_weights(folder + "/DeepBeam_model.hdf5")
         print("Loaded model from disk")
 
-
-
     def load_testing_data(self, model_dir_path):
         '''Load data from path into framework.'''
 
@@ -55,46 +51,43 @@ class DeepBeamTestingMixed(object):
 
         if os.path.exists(self.args.indexes_path + "/indexes_DeepBeam.pkl"):
             # Getting back the objects:
-            with open(self.args.indexes_path + "/indexes_DeepBeam.pkl", 'rb') as f:  # Python 3: open(..., 'rb') note that indexes
+            # Python 3: open(..., 'rb') note that indexes
+            with open(self.args.indexes_path + "/indexes_DeepBeam.pkl", 'rb') as f:
                 data_loaded = pkl.load(f)
-
-            # To Do: this should be transformed into a dictionary and you pull 'test_indexes only'. Kinda hardcoded to be fixed later
 
             self.test_indexes = data_loaded[-1]
 
             print('*********************  Generating testing data *********************')
 
             if (self.args.num_classes > 3):
-                self.test_generator = DataGeneratorCross(indexes=self.test_indexes,
-                                             batch_size=self.args.batch_size,
-                                             data_path=self.args.datasets,
-                                             num_tx_beams=self.args.num_classes,
-                                             num_blocks_per_frame=self.args.num_blocks_per_frame,
-                                             num_samples_per_block=self.args.num_samples_per_block,
-                                             how_many_blocks_per_frame=self.args.how_many_blocks_per_frame,
-                                             shuffle=False,
-                                             is_2d=self.is_2d)
+                self.test_generator = DataGeneratorCross(
+                    indexes=self.test_indexes,
+                    batch_size=self.args.batch_size,
+                    data_path=self.args.datasets,
+                    num_tx_beams=self.args.num_classes,
+                    num_blocks_per_frame=self.args.num_blocks_per_frame,
+                    num_samples_per_block=self.args.num_samples_per_block,
+                    how_many_blocks_per_frame=self.args.how_many_blocks_per_frame,
+                    shuffle=False,
+                    is_2d=self.is_2d)
             else:
-                self.test_generator = DataGeneratorSidelobesCross(indexes=self.test_indexes,
-                                             batch_size=self.args.batch_size,
-                                             data_path=self.args.datasets,
-                                             num_tx_beams=self.args.num_classes,
-                                             num_blocks_per_frame=self.args.num_blocks_per_frame,
-                                             num_samples_per_block=self.args.num_samples_per_block,
-                                             how_many_blocks_per_frame=self.args.how_many_blocks_per_frame,
-                                             shuffle=False,
-                                             is_2d=self.is_2d)
-
-
-
+                self.test_generator = DataGeneratorAoaCross(
+                    indexes=self.test_indexes,
+                    batch_size=self.args.batch_size,
+                    data_path=self.args.datasets,
+                    num_tx_beams=self.args.num_classes,
+                    num_blocks_per_frame=self.args.num_blocks_per_frame,
+                    num_samples_per_block=self.args.num_samples_per_block,
+                    how_many_blocks_per_frame=self.args.how_many_blocks_per_frame,
+                    shuffle=False,
+                    is_2d=self.is_2d)
 
             self.num_of_batches = len(self.test_indexes) / self.args.batch_size
             print("Number of test batches: " + str(self.num_of_batches))
         else:
             print('I have no data to load, please give me data (e.g., indexes.pkl)')
 
-
-    def get_predicted_label(self,labels):
+    def get_predicted_label(self, labels):
         unique, counts = np.unique(labels, return_counts=True)
         predicted_label = unique[np.argmax(counts)]
         return predicted_label
@@ -109,7 +102,7 @@ class DeepBeamTestingMixed(object):
             score = self.model.evaluate_generator(
                 self.test_generator,
                 verbose=1,
-                use_multiprocessing = False
+                use_multiprocessing=False
             )
             print("score is: " + str(score))
             return
@@ -117,10 +110,10 @@ class DeepBeamTestingMixed(object):
         score_predict = self.model.predict_generator(
             self.test_generator,
             verbose=1,
-            use_multiprocessing = False
+            use_multiprocessing=False
         )
 
-        label_predict = np.argmax(score_predict,1)
+        label_predict = np.argmax(score_predict, 1)
         label_true = np.zeros(label_predict.shape)
 
         idx = 0
@@ -135,14 +128,15 @@ class DeepBeamTestingMixed(object):
         con_matrix_perc = con_matrix / con_matrix.astype(np.float).sum(axis=1)
         example_accuracy = np.mean(np.diag(con_matrix_perc))
 
-        my_dict = {'example_accuracy' : example_accuracy,
-                   'confusion_matrix' : con_matrix_perc}
+        my_dict = {'example_accuracy': example_accuracy,
+                   'confusion_matrix': con_matrix_perc}
 
         print('Example Accuracy: ', example_accuracy)
 
         # Saving the objects:
 
-        with open(self.args.model_dir_path + "/" + self.args.file_save_accuracy, 'wb') as f:  # Python 3: open(..., 'wb')
+        # Python 3: open(..., 'wb')
+        with open(self.args.model_dir_path + "/" + self.args.file_save_accuracy, 'wb') as f:
             pkl.dump(my_dict, f)
 
         num_classes = con_matrix_perc[0].shape[0]
@@ -192,17 +186,18 @@ class DeepBeamTestingMixed(object):
                             help='Number of blocks per frame I take.')
 
         parser.add_argument('--plot_confusion', type=int,
-                        default=0,
-                        help='Plot confusion matrix')
+                            default=0,
+                            help='Plot confusion matrix')
 
         parser.add_argument('--score_only', type=int,
-                        default=1,
-                        help='Compute only score.')
+                            default=1,
+                            help='Compute only score.')
 
         parser.add_argument('--batch_size', type=int, default=32,
                             help='Batch size for model optimization.')
 
         return parser.parse_args()
+
 
 if __name__ == '__main__':
     DeepBeamTestingMixed()
