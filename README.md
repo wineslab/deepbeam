@@ -4,13 +4,13 @@ The code in this repository has been used to generate the results for the paper
 
 > M. Polese, F. Restuccia, and T. Melodia, "DeepBeam: Deep Waveform Learning for Coordination-Free Beam Management in mmWave Networks", Proc. of ACM Intl. Symp. on Theory, Algorithmic Foundations, and Protocol Design for Mobile Networks and Mobile Computing (ACM MobiHoc), October 2021.
 
-The associated dataset can be found [at this link](TODO).
+The associated dataset can be found [at this link](http://hdl.handle.net/2047/D20409451).
 
 Please reference the paper if you use the code or data from the dataset: [bibtex entry](https://ece.northeastern.edu/wineslab/wines_bibtex/polese2021mobihoc.txt)
 
 # Dataset structure
 
-The DeepBeam dataset can be found [at this link](TODO).
+The DeepBeam dataset can be found [at this link](http://hdl.handle.net/2047/D20409451).
 
 It contains 19 HDF5 files that represent a data collection campaign run on the NI mmWave Transceiver System with four SiBeam 60 GHz radio heads and on two [Pi-Radio](https://www.pi-rad.io) digital 60 GHz radios. The data collection campaign is described in [Section 4 of the DeepBeam paper](https://arxiv.org/pdf/2012.14350.pdf).
 
