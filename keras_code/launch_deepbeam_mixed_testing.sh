@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Customize this for your CUDA install
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-9.0/lib64/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-12.0/lib64/
 
 # The GPU id depends on the number of GPUs in your system 
 id_gpu=0
@@ -38,7 +38,7 @@ plot_confusion=1
 score_only=0
 
 
-python2 ./DeepBeamTestingMixed.py \
+python ./DeepBeamTestingMixed.py \
         --model_dir_path $root$model \
         --batch_size $batch_size \
         --file_save_accuracy $file_save_accuracy \
