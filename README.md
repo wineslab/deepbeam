@@ -6,7 +6,7 @@ The code in this repository has been used to generate the results for the paper
 
 The associated dataset can be found [at this link](http://hdl.handle.net/2047/D20409451).
 
-Please reference the paper if you use the code or data from the dataset: [bibtex entry](https://ece.northeastern.edu/wineslab/wines_bibtex/polese2021mobihoc.txt)
+Please reference the paper if you use the code or data from the dataset.
 
 # Dataset structure
 
