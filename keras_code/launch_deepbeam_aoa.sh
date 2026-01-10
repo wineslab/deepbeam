@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Customize this for your CUDA install
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-9.0/lib64/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-12.0/lib64/
 
 # The GPU id depends on the number of GPUs in your system 
 id_gpu=0
@@ -68,7 +68,7 @@ save_path+="_srn_$snr"
 save_path+="_ne_$epochs"
 save_path+="_bs_$batch_size"
 
-python2 ./DeepBeamAoa.py \
+python ./DeepBeamAoa.py \
     --data_path $data_path \
     --batch_size $batch_size \
     --train_cnn \
